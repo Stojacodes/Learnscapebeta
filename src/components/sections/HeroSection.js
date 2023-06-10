@@ -18,7 +18,7 @@ function HeroSection() {
         </ImageWrapper>
         <p>Generate a video course on anything in just one click...</p>
        <SearchBarComponent />
-        <Link to="/page-2/">advanced search</Link> <br />  
+        <Link to="/generating">advanced search</Link> <br />  
     </ContentWrapper>
     </Wrapper>
   )
