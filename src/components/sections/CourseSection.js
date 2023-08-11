@@ -1,30 +1,46 @@
-import React from "react"
+import React, { Component } from "react"
 import { Link } from "gatsby"
+import { useLocation } from "@reach/router"; // Import useLocation
 import styled from "styled-components"
 import SearchBarComponent from "../layout/SearchBarComponent"
+import CourseContents from "../CourseComponents/CourseContents";
+import CourseSummary from "../CourseComponents/CourseSummary";
+import CourseVideos from "../CourseComponents/CourseVideos";
+import MasteringCamera from '../MasteringCamera.svg';
+import FourRules from '../FourRules.svg';
 
 
 
-function GeneratingSection() {
-    return (
-      <Wrapper>
-        <ContentWrapper>
-          <SearchBarComponent />
-          <TextWrapper>
-            <img src="/images/logos/Ellipse1.svg" alt="Ellipse1" />
-            <p>Generating course structure...</p>
-            <ButtonWrapper>
-              <CancelButton to="/course/"> Cancel </CancelButton>
-            </ButtonWrapper>
-          </TextWrapper>
-          <HorizontalLine />
-        </ContentWrapper>
-      </Wrapper>
-    )
-  }
+function CourseSection() {
+  const location = useLocation(); // Get the location object
+  const videosFromSearch = location.state?.videos || []; // Extract videos from the location state
+
+  // Transform the videos to match the expected structure
+  const videos = videosFromSearch.map((video) => ({
+    title: video.snippet.title,
+    synopsis: video.snippet.description,
+    thumbnail: video.snippet.thumbnails.medium.url,
+  }));
   
 
-export default GeneratingSection
+  return (
+    <Wrapper>
+      <ContentWrapper>
+        <TextWrapper>
+          <h1>Wildlife Photography</h1>
+          <ButtonWrapper>
+            <CancelButton to="/page-2/"> Cancel </CancelButton>
+          </ButtonWrapper>
+        </TextWrapper>
+        <HorizontalLine />
+        <CourseVideos videos={videos} /> {/* Pass the transformed videos here */}
+      </ContentWrapper>
+    </Wrapper>
+  );
+}
+
+  
+export default CourseSection
 
 const ContentWrapper = styled.div`
   display: flex;

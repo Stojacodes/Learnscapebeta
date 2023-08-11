@@ -1,19 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { navigate } from "gatsby"; // Import navigate from Gatsby
+import searchYoutube from "../../api/searchYouTube";
+ // Import the search function
 
 function SearchBarComponent() {
+  const [query, setQuery] = useState(""); // State to hold the user input
+
+  // Function to handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Search for videos using the user's query
+    const videos = await searchYoutube(query);
+
+    // Navigate to the course page and pass the videos in the location state
+    navigate("/course", { state: { videos } });
+  };
+
   return (
     <SearchWrapper>
       <SearchBarContainer>
-        <SearchInput type="search" placeholder="e.g. Fermat's Last Theorem, Skateboarding, Jazz Guitar..." />
-        <SearchButton>     
-          <img src="/images/logos/auto_awesome.svg" alt="Awesome Icon" style={{ marginLeft: '15px' }} />
-         Create New Course
-         </SearchButton>
+        <form onSubmit={handleSubmit}>
+          <SearchInput
+            type="search"
+            placeholder="e.g. Fermat's Last Theorem, Skateboarding, Jazz Guitar..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <SearchButton type="submit">
+            <img
+              src="/images/logos/auto_awesome.svg"
+              alt="Awesome Icon"
+              style={{ marginLeft: "15px" }}
+            />
+            Create New Course
+          </SearchButton>
+        </form>
       </SearchBarContainer>
     </SearchWrapper>
   );
 }
+
+// Rest of your styled-components code
+
 
 export default SearchBarComponent;
 
