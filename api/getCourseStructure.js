@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 
 dotenv.config();
-
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
@@ -39,20 +38,25 @@ module.exports = async (req, res) => {
     for (const step of courseOutline) {
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${step}&maxResults=1&type=video&key=${YOUTUBE_API_KEY}`;
       const response = await axios.get(url);
-      videos.push(response.data.items[0]);
+      if (response.data.items.length > 0) { // Check if there are any videos returned
+        videos.push(response.data.items[0]);
+      } else {
+        videos.push(null); // Push null if no video is found
+      }
     }
 
-    res.status(200).json({ courseOutline, videos });
+    res.status(200).json(videos);
+   
   } catch (error) {
     console.error('Error generating course structure:', error);
-    res.status(500).json({ error: 'An error occurred while generating the course structure' });
+    if (error.response) {
+      console.error('Response Error:', error.response.data);
+      res.status(500).json({ error: error.response.data });
+    } else if (error.request) {
+      console.error('Request Error:', error.request);
+      res.status(500).json({ error: 'An error occurred while making the request' });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred while generating the course structure' });
+    }
   }
 };
-
-
-
-
-
-
-
-
