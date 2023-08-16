@@ -2,32 +2,41 @@ import React, { Component } from "react"
 import { Link } from "gatsby"
 import { useLocation } from "@reach/router"; // Import useLocation
 import styled from "styled-components"
-import SearchBarComponent from "../layout/SearchBarComponent"
-import CourseContents from "../CourseComponents/CourseContents";
-import CourseSummary from "../CourseComponents/CourseSummary";
+//import SearchBarComponent from "../layout/SearchBarComponent"
+//import CourseContents from "../CourseComponents/CourseContents";
+//import CourseSummary from "../CourseComponents/CourseSummary";
 import CourseVideos from "../CourseComponents/CourseVideos";
-import MasteringCamera from '../MasteringCamera.svg';
-import FourRules from '../FourRules.svg';
+import SearchBarComponent from "../layout/SearchBarComponent";
+//import MasteringCamera from '../MasteringCamera.svg';
+//import FourRules from '../FourRules.svg';
 
 
 
 function CourseSection() {
   const location = useLocation(); // Get the location object
+
+    // Log the entire location state
+    console.log('Location state:', location.state);
+
   const videosFromSearch = location.state?.videos || []; // Extract videos from the location state
 
+  console.log(videosFromSearch);
   // Transform the videos to match the expected structure
   const videos = videosFromSearch.map((video) => ({
     title: video.snippet.title,
     synopsis: video.snippet.description,
     thumbnail: video.snippet.thumbnails.medium.url,
+    id: video.id.videoId,// Include the video ID
   }));
   
-
+  
+  
   return (
     <Wrapper>
       <ContentWrapper>
+        <SearchBarComponent />
         <TextWrapper>
-          <h1>Wildlife Photography</h1>
+          <h1>Title</h1>
           <ButtonWrapper>
             <CancelButton to="/page-2/"> Cancel </CancelButton>
           </ButtonWrapper>

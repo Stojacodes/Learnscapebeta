@@ -45,21 +45,25 @@ function SearchBarComponent() {
     console.log('Query:', query); // Log the query
 
     // YouTube Search API endpoint
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=6&type=video&key=${YOUTUBE_API_KEY}`;
+    //const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=6&type=video&key=${YOUTUBE_API_KEY}`;
 
-    try {
-      const response = await axios.get(url);
-      const videos = response.data.items; // Extracting the items
-
-      console.log('Videos:', videos); // Log the videos
-
-      // Navigate to the course page and pass the videos in the location state
-      navigate("/course", { state: { videos } });
-    } catch (error) {
-      console.error('Error fetching videos:', error);
-      // Handle the error as needed
-    }
-  };
+    //try {
+      //const response = await axios.get(url);
+      //const videos = response.data.items; // Extracting the items
+     
+     try {
+        // Send a POST request to the serverless function with the query
+        const response = await axios.post("http://localhost:3000/api/getCourseStructure", { query: chatGPTQuery });
+        const { courseOutline, videos } = response.data;
+  
+        // Navigate to the course page and pass the course outline and videos in the location state
+        navigate("/course", { state: { courseOutline, videos } });
+  
+      } catch (error) {
+        console.error("Error fetching course structure:", error);
+        // Handle the error as needed
+      }
+    };
 
   return (
     <SearchWrapper>
