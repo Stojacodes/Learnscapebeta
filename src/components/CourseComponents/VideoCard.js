@@ -2,9 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 
 const VideoCard = ({ video }) => {
+  const videoId = video.id;
+  const videoUrl = `https://www.youtube.com/embed/${videoId}`;
+
   return (
     <CardWrapper>
-      <Thumbnail src={video.thumbnail} />
+      <iframe width="420" height="290" src={videoUrl} title={video.title} frameBorder="0" allowFullScreen></iframe>
       <VideoDetails>
         <SynopsisTitle>Synopsis:</SynopsisTitle>
         <VideoSynopsis>{video.synopsis}</VideoSynopsis>
@@ -13,18 +16,13 @@ const VideoCard = ({ video }) => {
     </CardWrapper>
   );
 };
+
 export default VideoCard;
 
 const CardWrapper = styled.div`
   display: flex;
   align-items: center;
   margin: 15px 0;
-`;
-
-const Thumbnail = styled.img`
-  width: 420px;
-  height: 290px;
-  margin-right: 40px;
 `;
 
 const VideoDetails = styled.div`
