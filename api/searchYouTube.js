@@ -8,11 +8,13 @@ module.exports = async (req, res) => {
     const query = req.query.q; // Retrieve the query parameter from the request
     const url = new URL(YOUTUBE_API_URL);
     url.searchParams.append('part', 'snippet');
-    url.searchParams.append('maxResults', '5'); // You can change the number of results
+    url.searchParams.append('maxResults', '6'); // You can change the number of results
     url.searchParams.append('q', query);
     url.searchParams.append('key', YOUTUBE_API_KEY);
 
     const response = await fetch(url.toString());
+    console.log('URL:', url.toString()); // Log the URL
+    console.log('Raw response:', response); // Log the raw response
     const data = await response.json();
 
     res.status(200).json(data); // Return the results as JSON

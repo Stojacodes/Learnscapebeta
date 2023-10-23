@@ -3,11 +3,9 @@ import styled from "styled-components";
 import { navigate } from "gatsby";
 import axios from 'axios';
 
-// Import the YouTube API key
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-
 function SearchBarComponent() {
   const [query, setQuery] = useState("");
+  const [error, setError] = useState(null);
 
   // Function to generate the ChatGPT query structure
   const generateQuery = (topic, level = "beginner") => {
@@ -35,23 +33,15 @@ function SearchBarComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-     // Example usage of generateQuery function
-     const chatGPTQuery = generateQuery(query);
-
-     // Here you might send chatGPTQuery to ChatGPT for processing
-     // ...
-
-    console.log('Query:', query); // Log the query
-
-    // YouTube Search API endpoint
-    //const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=6&type=video&key=${YOUTUBE_API_KEY}`;
-
-    //try {
-      //const response = await axios.get(url);
-      //const videos = response.data.items; // Extracting the items
-     
-     try {
+  
+    // Check if the query is not empty
+    if (query) {
+      // Generate the ChatGPT query
+      const chatGPTQuery = generateQuery(query);
+  
+      console.log('Query:', query); // Log the query
+  
+      try {
         // Send a POST request to the serverless function with the query
         const response = await axios.post("http://localhost:3000/api/getCourseStructure", { query: chatGPTQuery });
         const { courseOutline, videos } = response.data;
@@ -63,11 +53,16 @@ function SearchBarComponent() {
         console.error("Error fetching course structure:", error);
         // Handle the error as needed
       }
-    };
+    } else {
+      console.error("Query is empty");
+      // Handle the error as needed
+    }
+  };
 
   return (
     <SearchWrapper>
       <form onSubmit={handleSubmit}>
+      {error && <p>{error}</p>}
         <SearchInput
           type="text"
           placeholder="e.g. Fermat's Last Theorem, Skateboarding, Jazz Guitar..."
