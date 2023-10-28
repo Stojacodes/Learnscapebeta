@@ -3,12 +3,15 @@ import styled from 'styled-components';
 import VideoCard from './VideoCard';
 
 const CourseVideos = ({ videos = [] }) => {
+  console.log("CourseVideos - Received videos prop:", videos);
+  if (!videos.length) return <p>No videos found.</p>; // Return a message if there are no videos
+
   return (
     <VideosWrapper>
       {videos.map((video, index) => (
-        <React.Fragment key={video.id || index}> {/* Add key to the Fragment */}
+        <React.Fragment key={video.id || index}>
           <VideoCard video={video} />
-          {index < videos.length - 1 && <HorizontalLine />} {/* Add a horizontal line between videos */}
+          {index < videos.length - 1 && <HorizontalLine />}
         </React.Fragment>
       ))}
     </VideosWrapper>

@@ -1,55 +1,45 @@
-import React, { Component } from "react"
+import React from "react"
 import { Link } from "gatsby"
-import { useLocation } from "@reach/router"; // Import useLocation
+import { useLocation } from "@reach/router";
 import styled from "styled-components"
-//import SearchBarComponent from "../layout/SearchBarComponent"
-//import CourseContents from "../CourseComponents/CourseContents";
-//import CourseSummary from "../CourseComponents/CourseSummary";
 import CourseVideos from "../CourseComponents/CourseVideos";
 import SearchBarComponent from "../layout/SearchBarComponent";
-//import MasteringCamera from '../MasteringCamera.svg';
-//import FourRules from '../FourRules.svg';
-
-
 
 function CourseSection() {
-  const location = useLocation(); // Get the location object
+  const location = useLocation();
 
-    // Log the entire location state
-    console.log('Location state:', location.state);
+  console.log('Location state:', location.state);
 
-  const videosFromSearch = location.state?.videos || []; // Extract videos from the location state
+  const videosFromSearch = location.state?.videos || [];
+  console.log("CourseSection - Extracted videosFromSearch:", videosFromSearch);
 
-  console.log(videosFromSearch);
-  // Transform the videos to match the expected structure
-  const videos = videosFromSearch.map((video) => ({
-    title: video.snippet.title,
-    synopsis: video.snippet.description,
-    thumbnail: video.snippet.thumbnails.medium.url,
-    id: video.id.videoId,// Include the video ID
-  }));
-  
-  
-  
+  const videos = videosFromSearch.length > 0 ? videosFromSearch.map((video) => ({
+    title: video.title, // Use ChatGPT's title, not YouTube's snippet title
+    synopsis: video.video.snippet.description,
+    thumbnail: video.video.snippet.thumbnails.medium.url,
+    id: video.video.id.videoId,
+})) : [];
+  console.log("CourseSection - Transformed videos:", videos);
+
   return (
     <Wrapper>
       <ContentWrapper>
         <SearchBarComponent />
         <TextWrapper>
-          <h1>Title</h1>
+          <h1>{videos.length > 0 ? 'Course Videos' : 'No Videos Found'}</h1>
           <ButtonWrapper>
             <CancelButton to="/page-2/"> Cancel </CancelButton>
           </ButtonWrapper>
         </TextWrapper>
         <HorizontalLine />
-        <CourseVideos videos={videos} /> {/* Pass the transformed videos here */}
+        <CourseVideos videos={videos} />
       </ContentWrapper>
     </Wrapper>
   );
 }
-
   
 export default CourseSection
+
 
 const ContentWrapper = styled.div`
   display: flex;

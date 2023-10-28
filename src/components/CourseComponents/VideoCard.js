@@ -2,27 +2,45 @@ import React from 'react';
 import styled from 'styled-components';
 
 const VideoCard = ({ video }) => {
+  console.log("VideoCard - Received video prop:", video);
   const videoId = video.id;
+  console.log("VideoCard - Extracted video ID:", videoId);
   const videoUrl = `https://www.youtube.com/embed/${videoId}`;
+
+  const handleMarkComplete = () => {
+    // Add functionality to mark the video as complete
+    console.log(`Video ${videoId} marked as complete.`);
+  };
 
   return (
     <CardWrapper>
-      <iframe width="420" height="290" src={videoUrl} title={video.title} frameBorder="0" allowFullScreen></iframe>
+      <VideoTitle>{video.title}</VideoTitle> {/* Display the video title */}
+      <iframe width="620" height="390" src={videoUrl} title={video.title} frameBorder="0" allowFullScreen></iframe>
       <VideoDetails>
         <SynopsisTitle>Synopsis:</SynopsisTitle>
         <VideoSynopsis>{video.synopsis}</VideoSynopsis>
-        <MarkComplete>Mark as Complete</MarkComplete>
+        <MarkComplete onClick={handleMarkComplete}>Mark as Complete</MarkComplete>
       </VideoDetails>
     </CardWrapper>
   );
 };
 
+
 export default VideoCard;
+
 
 const CardWrapper = styled.div`
   display: flex;
+  flex-direction: column;  // This is the change
   align-items: center;
   margin: 15px 0;
+`;
+
+const VideoTitle = styled.h2`
+  font-size: 25px;
+  font-weight: 600;
+  margin-bottom: 20px; // Or adjust as needed
+  color: #FFFFFF; // Or adjust to your design preference
 `;
 
 const VideoDetails = styled.div`
@@ -36,7 +54,7 @@ const SynopsisTitle = styled.h4`
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
-  margin-bottom: 20px; // Add some space below the title
+  margin-bottom: 30px; // Add some space below the title
 `;
 
 const VideoSynopsis = styled.p`

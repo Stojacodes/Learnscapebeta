@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import React from 'react';
+
 
 const ContentsTitle = styled.h2`
   color: #1DE9B6;

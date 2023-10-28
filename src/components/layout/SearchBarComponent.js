@@ -9,17 +9,17 @@ function SearchBarComponent() {
 
   // Function to generate the ChatGPT query structure
   const generateQuery = (topic, level = "beginner") => {
-    const instruction = `Create a 6-step beginner course outline for learning ${topic}.`;
+    const instruction = `Create a list of 6 concise step-by-step headings for a beginner course in ${topic}. Please only list the course headings and avoid additional explanations or details.`;
     const examples = [
       {
-        instruction: "Create a 6-step beginner course outline for learning wildlife photography.",
+        instruction: "Create a list of 6 concise step-by-step headings for a beginner course in wildlife photography. Please only list the course headings and avoid additional explanations or details.`;",
         response: [
-          "Understanding Wildlife Behavior and Habitats",
-          "Mastering Camera Settings and Equipment",
-          "Composition and Framing Techniques",
-          "Patience, Observation, and Fieldcraft",
-          "Post-processing and Editing Techniques",
-          "Sharing and Marketing Your Wildlife Photographs"
+          "Introduction to Wildlife Photography",
+          "Essential Camera Gear and Settings",
+          "Field Techniques and Composition",
+          "Understanding Wildlife Behavior",
+          "Post-Processing and Editing",
+          "Ethics and Conservation in Wildlife Photography"
         ]
       }
     ];
