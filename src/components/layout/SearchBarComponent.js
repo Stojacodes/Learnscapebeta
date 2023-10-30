@@ -3,6 +3,14 @@ import styled from "styled-components";
 import { navigate } from "gatsby";
 import axios from 'axios';
 
+// Commented out the environment-based API_BASE_URL approach
+// const API_BASE_URL = process.env.NODE_ENV === 'production' 
+//                      ? 'https://learnscapebeta.vercel.app' 
+//                      : 'http://localhost:3000';
+
+// Manual URL approach
+const API_BASE_URL = 'https://learnscapebeta.vercel.app';
+
 function SearchBarComponent() {
   const [query, setQuery] = useState("");
   const [error, setError] = useState(null);
@@ -30,7 +38,6 @@ function SearchBarComponent() {
     };
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -38,12 +45,11 @@ function SearchBarComponent() {
     if (query) {
       // Generate the ChatGPT query
       const chatGPTQuery = generateQuery(query);
-  
       console.log('Query:', query); // Log the query
   
       try {
         // Send a POST request to the serverless function with the query
-        const response = await axios.post("http://localhost:3000/api/getCourseStructure", { query: chatGPTQuery });
+        const response = await axios.post(`/api/getCourseStructure`, { query: chatGPTQuery });
         const { courseOutline, videos } = response.data;
   
         // Navigate to the course page and pass the course outline and videos in the location state
@@ -51,10 +57,12 @@ function SearchBarComponent() {
   
       } catch (error) {
         console.error("Error fetching course structure:", error);
+        setError("Error fetching course structure. Please try again later."); // Setting the error state
         // Handle the error as needed
       }
     } else {
       console.error("Query is empty");
+      setError("Please enter a valid query."); // Setting the error state for an empty query
       // Handle the error as needed
     }
   };
@@ -83,6 +91,7 @@ function SearchBarComponent() {
 }
 
 export default SearchBarComponent;
+
 
 const SearchWrapper = styled.div`
   display: flex;

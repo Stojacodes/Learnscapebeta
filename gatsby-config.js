@@ -27,7 +27,9 @@
         // theme_color: `#663399`,
         display: `minimal-ui`,
         icon: `static/images/icons/favicon-32x32.png`, // This path is relative to the root of the site.
+        
       },
     },
+    `gatsby-plugin-styled-components`, 
   ],
 }
