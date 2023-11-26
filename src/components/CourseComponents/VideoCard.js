@@ -1,30 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const VideoCard = ({ video }) => {
-  console.log("VideoCard - Received video prop:", video);
-  const videoId = video.id;
-  console.log("VideoCard - Extracted video ID:", videoId);
+  const [currentIndex, setCurrentIndex] = useState(0); // Index to manage which video to show
+  
+  // Check if there are alternative videos
+  const hasAlternatives = Array.isArray(video.videos) && video.videos.length > 1;
+
+  const currentVideo = video.videos[currentIndex];
+  const videoId = currentVideo.id;
   const videoUrl = `https://www.youtube.com/embed/${videoId}`;
 
   const handleMarkComplete = () => {
-    // Add functionality to mark the video as complete
     console.log(`Video ${videoId} marked as complete.`);
+  };
+
+  const handleSwitchVideo = () => {
+    // Switch to the next video in the list, and loop back to the first video if at the end
+    const nextIndex = (currentIndex + 1) % video.videos.length;
+    setCurrentIndex(nextIndex);
   };
 
   return (
     <CardWrapper>
-      <VideoTitle>{video.title}</VideoTitle> {/* Display the video title */}
-      <iframe width="620" height="390" src={videoUrl} title={video.title} frameBorder="0" allowFullScreen></iframe>
+      <VideoTitle>{video.title}</VideoTitle> {/* This displays the Course Outline title */}
+      <iframe width="620" height="390" src={videoUrl} title={currentVideo.title} frameBorder="0" allowFullScreen></iframe>
       <VideoDetails>
         <SynopsisTitle>Synopsis:</SynopsisTitle>
-        <VideoSynopsis>{video.synopsis}</VideoSynopsis>
+        <VideoSynopsis>{currentVideo.synopsis}</VideoSynopsis>
         <MarkComplete onClick={handleMarkComplete}>Mark as Complete</MarkComplete>
+        {hasAlternatives && <SwitchVideoButton onClick={handleSwitchVideo}>Switch Video</SwitchVideoButton>}
       </VideoDetails>
     </CardWrapper>
   );
 };
-
 
 export default VideoCard;
 
@@ -75,4 +84,26 @@ const MarkComplete = styled.button`
   border: none;
   padding: 5px 10px;
   cursor: pointer;
+  margin-right: 10px; 
 `;
+
+const SwitchVideoButton = styled.button`
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #1DE9B6;
+  border: none;
+  border-radius: 4px;
+  color: black; // Changed color to black
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #0056b3; // Darken on hover for a subtle effect
+  }
+
+  &:disabled {
+    background-color: #c0c0c0; // Grayed out if disabled
+    cursor: not-allowed;
+  }
+`;
+

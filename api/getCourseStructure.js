@@ -5,7 +5,8 @@ import fetch from 'node-fetch';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-const MAX_WORDS_PER_STEP = 10;  // You can adjust this as needed
+const MAX_WORDS_PER_STEP = 10;
+const MAX_RESULTS_PER_STEP = 3;
 
 function removeDuplicateWords(str) {
     let words = str.split(" ");
@@ -19,11 +20,17 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+    // Query Validation
+    if (!req.body || !req.body.query || !req.body.query.instruction) {
+        res.status(400).json({ error: "Invalid input" });
+        return;
+    }
+
+    const query = typeof req.body === 'string' ? JSON.parse(req.body).query : req.body.query;
+
     try {
         console.log("Request body:", req.body);
 
-        const query = typeof req.body === 'string' ? JSON.parse(req.body).query : req.body.query;
-        
         const matches = query.instruction.match(/a beginner course in (.+?)\./);
         if (!matches) {
             console.error("Failed to extract topic from instruction:", query.instruction);
@@ -31,7 +38,7 @@ module.exports = async (req, res) => {
             return;
         }
         const topic = matches[1];
-        
+
         const messages = [
             { role: "system", content: "You are a helpful assistant specialized in creating educational course outlines." },
             { role: "user", content: query.instruction }
@@ -61,50 +68,52 @@ module.exports = async (req, res) => {
         console.log("Course outline created:", courseOutline);
 
         const videos = [];
-    const errors = [];
-    const selectedVideoIds = []; // New array to track already selected video IDs
+        const errors = [];
+        const selectedVideoIds = [];
 
-    for (const step of courseOutline) {
-        const searchQuery = `${step} ${topic}`;
-        const cleanedSearchQuery = removeDuplicateWords(searchQuery);
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${cleanedSearchQuery}&maxResults=5&type=video&key=${YOUTUBE_API_KEY}`; // Changed maxResults to 5 to have more choices for filtering
+        for (const step of courseOutline) {
+            const searchQuery = `${step} ${topic}`;
+            const cleanedSearchQuery = removeDuplicateWords(searchQuery);
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${cleanedSearchQuery}&maxResults=${MAX_RESULTS_PER_STEP}&type=video&key=${YOUTUBE_API_KEY}`;
 
-        console.log(`Fetching YouTube video for query: "${cleanedSearchQuery}"...`);
+            console.log(`Fetching YouTube video for query: "${cleanedSearchQuery}"...`);
 
-        try {
-            const response = await fetch(url);
-            const responseData = await response.json();
+            try {
+                const response = await fetch(url);
+                const responseData = await response.json();
 
-            console.log("Received YouTube response for query:", cleanedSearchQuery, responseData);
+                console.log("Received YouTube response for query:", cleanedSearchQuery, responseData);
 
-            if (responseData.items && responseData.items.length > 0) {
-                // Filter out videos that have already been selected
-                const uniqueVideos = responseData.items.filter(item => !selectedVideoIds.includes(item.id.videoId));
+                // Exclude videos that are already selected
+                const newVideos = responseData.items.filter(video => !selectedVideoIds.includes(video.id.videoId));
 
-                if (uniqueVideos.length === 0) {
-                    errors.push({ error: "No unique video found for " + cleanedSearchQuery });
-                    continue;
+                if (newVideos && newVideos.length > 0) {
+                    const rankedVideos = newVideos.sort((a, b) => {
+                        const aCount = cleanedSearchQuery.split(" ").reduce((acc, word) => acc + (a.snippet.title.includes(word) ? 1 : 0), 0);
+                        const bCount = cleanedSearchQuery.split(" ").reduce((acc, word) => acc + (b.snippet.title.includes(word) ? 1 : 0), 0);
+                        return bCount - aCount;
+                    });
+
+                    // Add the video IDs to selectedVideoIds
+                    selectedVideoIds.push(...rankedVideos.map(video => video.id.videoId));
+
+                    videos.push({
+                        title: step,
+                        videos: rankedVideos.map(video => ({
+                            id: video.id.videoId,
+                            title: video.snippet.title,
+                            synopsis: video.snippet.description,
+                            thumbnail: video.snippet.thumbnails.default.url
+                        }))
+                    });
+                } else {
+                    errors.push({ error: "No new video found for " + cleanedSearchQuery });
                 }
-
-                const rankedVideos = uniqueVideos.sort((a, b) => {
-                    const aCount = cleanedSearchQuery.split(" ").reduce((acc, word) => acc + (a.snippet.title.includes(word) ? 1 : 0), 0);
-                    const bCount = cleanedSearchQuery.split(" ").reduce((acc, word) => acc + (b.snippet.title.includes(word) ? 1 : 0), 0);
-                    return bCount - aCount;
-                });
-                videos.push({
-                    title: step,
-                    video: rankedVideos[0]
-                });
-                // Add the video ID to selectedVideoIds
-                selectedVideoIds.push(rankedVideos[0].id.videoId);
-            } else {
-                errors.push({ error: "No video found for " + cleanedSearchQuery });
+            } catch (err) {
+                console.error("Error fetching video for query:", cleanedSearchQuery, err.message);
+                errors.push({ error: "Error fetching video for " + cleanedSearchQuery });
             }
-        } catch (err) {
-            console.error("Error fetching video for query:", cleanedSearchQuery, err.message);
-            errors.push({ error: "Error fetching video for " + cleanedSearchQuery });
         }
-    }
 
         console.log("Sending response with videos:", videos, "and errors:", errors);
         res.status(200).json({ videos: videos, errors: errors });

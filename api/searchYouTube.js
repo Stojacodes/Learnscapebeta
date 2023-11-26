@@ -6,7 +6,6 @@ const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/search';
 module.exports = async (req, res) => {
   try {
     const query = req.query.q; // Retrieve the query parameter from the request
-    const excludeVideoIds = req.query.excludeVideoIds || []; // Retrieve an array of video IDs to exclude
 
     const url = new URL(YOUTUBE_API_URL);
     url.searchParams.append('part', 'snippet');

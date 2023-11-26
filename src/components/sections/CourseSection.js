@@ -13,12 +13,12 @@ function CourseSection() {
   const videosFromSearch = location.state?.videos || [];
   console.log("CourseSection - Extracted videosFromSearch:", videosFromSearch);
 
-  const videos = videosFromSearch.length > 0 ? videosFromSearch.map((video) => ({
-    title: video.title, // Use ChatGPT's title, not YouTube's snippet title
-    synopsis: video.video.snippet.description,
-    thumbnail: video.video.snippet.thumbnails.medium.url,
-    id: video.video.id.videoId,
-})) : [];
+  // Adjusting the structure to match our new VideoCard expectations
+  const videos = videosFromSearch.length > 0 ? videosFromSearch.map((videoData) => ({
+    title: videoData.title,
+    videos: videoData.videos,  // Passing the whole array of videos
+  })) : [];
+
   console.log("CourseSection - Transformed videos:", videos);
 
   return (
@@ -37,6 +37,7 @@ function CourseSection() {
     </Wrapper>
   );
 }
+
   
 export default CourseSection
 
