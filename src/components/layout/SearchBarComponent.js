@@ -3,13 +3,13 @@ import styled from "styled-components";
 import { navigate } from "gatsby";
 import axios from 'axios';
 
-// Commented out the environment-based API_BASE_URL approach
-// const API_BASE_URL = process.env.NODE_ENV === 'production' 
-//                      ? 'https://learnscapebeta.vercel.app' 
-//                      : 'http://localhost:3000';
+let API_BASE_URL;
+if (process.env.NODE_ENV === 'production') {
+  API_BASE_URL = 'https://learnscapebeta.vercel.app';
+} else {
+  API_BASE_URL = 'http://localhost:3000'; // Vercel CLI defaults to port 3000 for local development
+}
 
-// Manual URL approach
-const API_BASE_URL = 'https://learnscapebeta.vercel.app';
 
 function SearchBarComponent() {
   const [query, setQuery] = useState("");

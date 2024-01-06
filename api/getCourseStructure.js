@@ -16,9 +16,10 @@ function removeDuplicateWords(str) {
 
 module.exports = async (req, res) => {
     // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', 'https://learnscapebeta.vercel.app/');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+const allowedOrigins = ['https://learnscapebeta.vercel.app', 'http://localhost:3000'];
+const origin = allowedOrigins.includes(req.headers.origin) ? req.headers.origin : allowedOrigins[0];
+res.setHeader('Access-Control-Allow-Origin', origin);
+
 
     // Query Validation
     if (!req.body || !req.body.query || !req.body.query.instruction) {
