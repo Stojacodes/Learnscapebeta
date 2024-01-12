@@ -1,14 +1,17 @@
-import React from "react"
-//import { GlobalStyle } from "../styles/GlobalStyle"
-import "./layout.css"
-import Header from "./Header"
+// src/components/layout/Layout.js
+import React from 'react';
+import { Box } from '@mui/material';
+import Header from './Header';
 
 function Layout({ children }) {
   return (
     <>
-      <Header/>
-      <main>{children}</main>
+      <Header />
+      <Box sx={{ bgcolor: 'background.default', color: 'text.primary', minHeight: '100vh' }}>
+        <main>{children}</main>
+      </Box>
     </>
   )
 }
-export default Layout
+
+export default Layout;

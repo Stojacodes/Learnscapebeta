@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import { navigate } from "gatsby";
 import axios from 'axios';
+import { Box, TextField, Button, Paper } from '@mui/material';
 
-let API_BASE_URL;
-if (process.env.NODE_ENV === 'production') {
-  API_BASE_URL = 'https://learnscapebeta.vercel.app';
-} else {
-  API_BASE_URL = 'http://localhost:3000'; // Vercel CLI defaults to port 3000 for local development
-}
-
+// Define your API base URL
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? 
+                     'https://learnscapebeta.vercel.app' : 
+                     'http://localhost:3000';
 
 function SearchBarComponent() {
   const [query, setQuery] = useState("");
@@ -31,6 +28,7 @@ function SearchBarComponent() {
         ]
       }
     ];
+
     return {
       instruction: instruction,
       examples: examples,
@@ -68,59 +66,56 @@ function SearchBarComponent() {
   };
 
   return (
-    <SearchWrapper>
-      <form onSubmit={handleSubmit}>
-      {error && <p>{error}</p>}
-        <SearchInput
-          type="text"
-          placeholder="e.g. Fermat's Last Theorem, Skateboarding, Jazz Guitar..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <SearchButton type="submit">
-          <img
-            src="/images/logos/auto_awesome.svg"
-            alt="Awesome Icon"
-            style={{ marginRight: "8px" }} 
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      mt: 2,
+    }}>
+      <Paper elevation={10} sx={{ borderRadius: '20px', display: 'flex' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', width: 'fit-content' }}>
+          {error && <p>{error}</p>}
+          <TextField
+            type="text"
+            placeholder="e.g. Fermat's Last Theorem, Skateboarding, Jazz Guitar..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            variant="outlined"
+            sx={{ 
+              width: '600px', 
+              height: '56px',
+              mr: 1,
+              borderRadius: '20px 0 0 20px', 
+              '& .MuiOutlinedInput-root': {
+                height: '56px',
+                borderRadius: '20px 0 0 20px',
+                alignItems: 'center',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'rgba(0,0,0,0.3)',
+              },
+            }}
           />
-          Create New Course
-        </SearchButton>
-      </form>
-    </SearchWrapper>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            type="submit" 
+            sx={{ 
+              borderRadius: '0 20px 20px 0', 
+              height: '56px',
+              boxShadow: '0px 4px 6px rgba(255, 255, 255, 0.1)',
+              '&:hover': {
+                boxShadow: '0px 4px 6px rgba(255, 255, 255, 0.3)',
+              },
+            }}
+          >
+            Create Course
+          </Button>
+        </form>
+      </Paper>
+    </Box>
   );
 }
 
 export default SearchBarComponent;
-
-
-const SearchWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`;
-
-const SearchInput = styled.input`
-  width: 500px;
-  height: 35px; // Same height as the button
-  padding: 8px 16px;
-  font-size: 16px;
-  border: none;
-  border-radius: 20px 0 0 20px;
-  outline: none;
-  color: white; // White text color
-  background: rgba(0, 0, 0, 0.3); // Background color
-  box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1); // White halo (box shadow)
-`;
-
-const SearchButton = styled.button`
-  height: 50px; // Same height as the input
-  padding: 8px 16px;
-  background: #1DE9B6;
-  border: none;
-  border-radius: 0 20px 20px 0;
-  color: black;
-  cursor: pointer;
-  font-size: 16px;
-  box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1);
-`;
